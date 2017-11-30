@@ -15,9 +15,7 @@ public class ChannelState extends State{
     public int getTotalMoney() {
         int total = 0;
         for (Message message : messages) {
-            if (!message.isToken()) {
-                total += Integer.valueOf(message.text);
-            }
+            total += Integer.valueOf(message.text);
         }
         this.money = total;
         return super.getTotalMoney();

@@ -3,7 +3,7 @@ package group27_distributed.assignment2c;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class ChannelRecording extends ArrayBlockingQueue<Message> {
-    private boolean tokenSeen = false;
+    private Token tokenSeen = null;
 
     public ChannelRecording() {
         super(100, true);
@@ -11,15 +11,19 @@ public class ChannelRecording extends ArrayBlockingQueue<Message> {
 
     @Override
     public boolean add(Message message) {
-        if (message.isToken() || tokenSeen) {
-            tokenSeen = true;
+        if (tokenSeen()) {
+            //Dont record this channel if it already received the token.
             return false;
         }
         return super.add(message);
     }
 
+    public void addToken(Token token) {
+        this.tokenSeen = token;
+    }
+
     public boolean tokenSeen() {
-        return tokenSeen;
+        return tokenSeen != null;
     }
 
     public ChannelState getChannelState() {

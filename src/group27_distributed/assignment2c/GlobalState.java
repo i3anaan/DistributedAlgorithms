@@ -27,13 +27,19 @@ public class GlobalState {
     }
 
     public String toString(){
+        int totalMoney = 0;
         String out = "";
         for (Map.Entry<Integer, State> pair : nodes.entrySet()) {
             out += "N[" + pair.getKey() + "]: $" + pair.getValue().getTotalMoney() + "\n";
+            totalMoney += pair.getValue().getTotalMoney();
         }
         for (Map.Entry<Channel, ChannelState> pair : channels.entrySet()) {
             out += "E[" + pair.getKey().from + "->" + pair.getKey().to + "]: $" + pair.getValue().getTotalMoney() + "\n";
+            totalMoney += pair.getValue().getTotalMoney();
         }
+
+        out += "TOTAL MONEY IN SYSTEM: $" + totalMoney + "\n";
+
 
         return out;
     }

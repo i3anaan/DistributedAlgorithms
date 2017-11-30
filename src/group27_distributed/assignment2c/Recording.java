@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Recording implements Serializable{
-
-    private boolean recorded = false;
     private boolean recording = false;
 
     public State nodeState;
@@ -15,58 +13,40 @@ public class Recording implements Serializable{
 
     public Recording(int id) {
         this.nodeID = id;
+        for (int i = 0; i < Server.NUMBER_OF_NODES; i++) {
+            ins.put(i, new ChannelRecording());
+        }
     }
 
     public void startRecord(State state){
-        if (!recorded && !recording) {
+        if (!finishedRecording() && !recording) {
             System.out.println(this + " - RECORDING");
             recording = true;
             nodeState = state;
-        }
-    }
-
-    public Recording stopRecord(){
-        if (!recording) {
+        } else {
             throw new UnsupportedOperationException();
         }
-        System.out.println(this + " STOPPED");
-        recorded = true;
-        recording = false;
-        return this;
     }
 
-    public boolean handleMessageIn(int senderID, Message message) {
-        if (!recording) {
-            return false;
-        }
-        //Add to queue
-        if (ins.get(senderID) == null) {
-            System.out.println(this + " - Making new ChannelRecording for: " + senderID);
-            ins.put(senderID, new ChannelRecording());
-        }
-
-        ins.get(senderID).add(message);
-
-        if (ins.values().stream().allMatch(c -> c.tokenSeen())) {
-            //Seen tokens on all incoming channels
-            stopRecord();
-        }
-
-        return hasRecorded();
+    public void handleToken(int senderID, Token token){
+        ins.get(senderID).addToken(token);
     }
 
-    public void handleMessageOut(Message message) {
+    public void handleMessageIn(int senderID, Message message) {
         if (!recording) {
             return;
         }
+
+        ins.get(senderID).add(message);
     }
 
     public boolean isRecording() {
         return recording;
     }
 
-    public boolean hasRecorded() {
-        return !recording && recorded;
+    public boolean finishedRecording() {
+        //All incoming recordings have seen the token.
+        return ins.values().stream().allMatch(c -> c.tokenSeen());
     }
 
     public String toString() {

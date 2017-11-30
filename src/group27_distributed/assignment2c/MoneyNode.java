@@ -16,31 +16,25 @@ public class MoneyNode extends StateCapableNode {
         //Frantically start spamming everyone with money.
 
         for ( int i = 0 ; i < 5; i++){
+            randomWait();
             Node_RMI destination = peers[ThreadLocalRandom.current().nextInt(0,peers.length)];
             int money = ThreadLocalRandom.current().nextInt(0,20);
-            long sleepiness = ThreadLocalRandom.current().nextLong(0l, 100l);
-            this.sendMessage(destination, Message.getMoneyMessage(money));
-
-            try {
-                Thread.sleep(sleepiness);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            this.sendMessage(destination, new Message(money + ""));
         }
     }
 
     @Override
     protected void handleMessageIn(int senderID, Message message) {
-        if (!message.isToken()) {
-            this.money += Integer.valueOf(message.text);
-        }
+        changeMoney(Integer.valueOf(message.text));
     }
 
     @Override
     protected void handleMessageOut(Message message) {
-        if (!message.isToken()) {
-            this.money -= Integer.valueOf(message.text);
-        }
+        changeMoney(-1 * Integer.valueOf(message.text));
+    }
+
+    private synchronized void changeMoney(int change) {
+        this.money -= change;
     }
 
     @Override
