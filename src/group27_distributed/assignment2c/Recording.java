@@ -19,6 +19,7 @@ public class Recording implements Serializable{
 
     public void startRecord(State state){
         if (!recorded && !recording) {
+            System.out.println(this + " - RECORDING");
             recording = true;
             nodeState = state;
         }
@@ -28,6 +29,7 @@ public class Recording implements Serializable{
         if (!recording) {
             throw new UnsupportedOperationException();
         }
+        System.out.println(this + " STOPPED");
         recorded = true;
         recording = false;
         return this;
@@ -39,6 +41,7 @@ public class Recording implements Serializable{
         }
         //Add to queue
         if (ins.get(senderID) == null) {
+            System.out.println(this + " - Making new ChannelRecording for: " + senderID);
             ins.put(senderID, new ChannelRecording());
         }
 
@@ -64,5 +67,9 @@ public class Recording implements Serializable{
 
     public boolean hasRecorded() {
         return !recording && recorded;
+    }
+
+    public String toString() {
+        return "Recording[" + nodeID + "]";
     }
 }

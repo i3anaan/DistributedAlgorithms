@@ -38,7 +38,9 @@ public class Server {
 		Random rand = new Random(seed);
 		StateCapableNode theChosenOne = nodes.get(rand.nextInt(NUMBER_OF_NODES));
 
+		System.out.println("\nSTARTING STATE RECORDING \n");
 		System.out.println("TheChosenOne: " + theChosenOne);
+
 
 		GlobalState state = theChosenOne.gatherGlobalState();
 

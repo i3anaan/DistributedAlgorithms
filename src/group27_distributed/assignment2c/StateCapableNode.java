@@ -25,7 +25,7 @@ public class StateCapableNode extends UnicastRemoteObject implements Node_RMI, R
 
     @Override
     public void recvMessage(int senderID, Message msg) throws RemoteException {
-        System.out.println(this + " Received message: " + msg + " From: ?");
+        System.out.println(this + " Received message: " + msg + " From: " + senderID);
 
         if (msg.isToken()) {
             cascadeToken(msg);
@@ -42,16 +42,16 @@ public class StateCapableNode extends UnicastRemoteObject implements Node_RMI, R
 
     @Override
     public void recvRecording(int senderID, Recording recording) throws RemoteException {
-        System.out.println(this + " Received recording: " + recording + " From: " + peers[senderID]);
+        System.out.println(this + " Received recording: " + recording + " From: " + senderID);
         globalState.addRecording(recording);
     };
 
     public void sendMessage(Node_RMI node, Message msg) {
-        if (node == this) {
+        if (remoteObjectToID(node) == this.id) {
             //Send to self = ignore;
             return;
         }
-        System.out.println(this + " Sending message: " + msg + " To: ?");
+        System.out.println(this + " Sending message: " + msg + " To: " + this.remoteObjectToID(node));
         recording.handleMessageOut(msg);
 
         try {
@@ -102,6 +102,15 @@ public class StateCapableNode extends UnicastRemoteObject implements Node_RMI, R
         }
     }
 
+    private int remoteObjectToID(Node_RMI node) {
+        for (int i = 0; i < peers.length; i++) {
+            if (peers[i].equals(node)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     protected void startrandombroadcast() {
         //To be extended...
     }
@@ -115,7 +124,7 @@ public class StateCapableNode extends UnicastRemoteObject implements Node_RMI, R
     }
 
     protected State getState() {
-        //To be extended
+        //To be extended...
         return new State();
     }
 
