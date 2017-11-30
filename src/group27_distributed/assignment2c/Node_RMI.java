@@ -5,6 +5,8 @@ import java.rmi.RemoteException;
 
 public interface Node_RMI extends Remote {
 
+	public void recvSendable(int senderID, Sendable sendable) throws RemoteException;
+
 	public void recvMessage(int senderID, Message message) throws RemoteException;
 	public void recvToken(int senderID, Token token) throws RemoteException;
 	public void recvRecording(int senderID, Recording recording) throws RemoteException;

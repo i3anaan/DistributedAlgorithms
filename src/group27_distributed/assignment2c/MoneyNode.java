@@ -12,14 +12,18 @@ public class MoneyNode extends StateCapableNode {
     }
 
     @Override
-    protected void startrandombroadcast() {
-        //Frantically start spamming everyone with money.
+    protected void queueSomeMessages() {
+        //For each outgoing channel
+        for (int c = 0; c < Server.NUMBER_OF_NODES; c++) {
+            if (this.id != c) { //Do not sent to self.
+                //Send 0 or 1 messages
+                int messageCount = ThreadLocalRandom.current().nextInt(0, 2);
+                for (int m = 0; m < messageCount; m++) {
+                    int money = ThreadLocalRandom.current().nextInt(0, 20);
+                    sendMessage(c, new Message(money + ""));
+                }
+            }
 
-        for ( int i = 0 ; i < 5; i++){
-            randomWait();
-            Node_RMI destination = peers[ThreadLocalRandom.current().nextInt(0,peers.length)];
-            int money = ThreadLocalRandom.current().nextInt(0,20);
-            this.sendMessage(destination, new Message(money + ""));
         }
     }
 

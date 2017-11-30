@@ -1,8 +1,9 @@
 package group27_distributed.assignment2c;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 
-public class Message implements Serializable{
+public class Message implements Serializable, Sendable{
 
     public String text;
 
@@ -13,5 +14,14 @@ public class Message implements Serializable{
     @Override
     public String toString() {
         return "$" + text;
+    }
+
+    @Override
+    public void getSentTo(int senderID, Node_RMI node) {
+        try {
+            node.recvMessage(senderID, this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }

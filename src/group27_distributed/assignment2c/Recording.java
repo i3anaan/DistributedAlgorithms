@@ -1,9 +1,10 @@
 package group27_distributed.assignment2c;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.*;
 
-public class Recording implements Serializable{
+public class Recording implements Serializable, Sendable {
     private boolean recording = false;
 
     public State nodeState;
@@ -30,6 +31,7 @@ public class Recording implements Serializable{
 
     public void handleToken(int senderID, Token token){
         ins.get(senderID).addToken(token);
+        System.out.println(this + " Recorded channel (" + senderID + "): " + Arrays.toString(ins.get(senderID).toArray()));
     }
 
     public void handleMessageIn(int senderID, Message message) {
@@ -51,5 +53,14 @@ public class Recording implements Serializable{
 
     public String toString() {
         return "Recording[" + nodeID + "]";
+    }
+
+    @Override
+    public void getSentTo(int senderID, Node_RMI node) {
+        try {
+            node.recvRecording(senderID, this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }
